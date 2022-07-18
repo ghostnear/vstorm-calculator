@@ -1,6 +1,7 @@
 # Binaries for programs and plugins
 main
 app-calculator
+*.apk
 *.exe
 *.exe~
 *.so

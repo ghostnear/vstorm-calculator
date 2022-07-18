@@ -10,11 +10,12 @@ fn app_init(mut app &vstorm.StormContext) {
 
 	// Create the calculator buttons
 	text := [
-		['+', '-', '(', ')'],
-		['7', '8', '9', '*'],
-		['4', '5', '6', '/'],
-		['1', '2', '3'],
-		['.', '0'],
+		['sin', 'cos', 'tan', 'π']
+		['+', '-', '*', '/'],
+		['7', '8', '9', '(', ')'],
+		['4', '5', '6', 'ln', 'e'],
+		['1', '2', '3', '^'],
+		['.', '0', '', '√'],
 	]
 	mut i := 0
 	for x in text {
@@ -55,8 +56,8 @@ fn app_init(mut app &vstorm.StormContext) {
 	bkg.add_child(
 		mut create_calculator_button(
 			ButtonConfig{
-				xindex: 3
-				yindex: 3
+				xindex: 4
+				yindex: 4
 				text: '='
 				normal_color: gx.Color{
 					r: 0x22
@@ -79,8 +80,8 @@ fn app_init(mut app &vstorm.StormContext) {
 	bkg.add_child(
 		mut create_calculator_button(
 			ButtonConfig{
-				xindex: 2
-				yindex: 4
+				xindex: 4
+				yindex: 1
 				text: '←'
 				normal_color: gx.Color{
 					r: 0x44
@@ -104,7 +105,7 @@ fn app_init(mut app &vstorm.StormContext) {
 
 fn main() {
 	// App data goes here
-	app_config := vstorm.StormConfig{
+	mut app_config := vstorm.StormConfig{
 		// Window specific configuration
 		winconfig: vstorm.StormWindowConfig{
 			title: 'Calculator'
@@ -113,7 +114,7 @@ fn main() {
 			init_fn: app_init
 		}
 	}
-
+	
 	// App runner
 	mut app := vstorm.new_storm_context(app_config)
 	app.run()
