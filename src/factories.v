@@ -184,37 +184,58 @@ pub fn create_calculator_button(cfg ButtonConfig) &vstorm.Node {
 			mut window := node.context.win
 			mut e := window.latest_event
 
+			get_rect := fn(node &vstorm.Node) vstorm.NodeR2D {
+				w_size := node.context.win.get_size()
+				mut rect := (&vstorm.NodeR2D(node.get_component('rect'))).get_relative_to(w_size)
+				pad := (&vstorm.NodeV2D(node.get_component('padding'))).get_relative_to(w_size)
+				rect.pos += pad
+				rect.siz -= pad.multiply_by(2)
+				return rect
+			}
+			rect := get_rect(node)
+
 			// Event handling
 			match e.typ {
-				.touches_began,
-				.touches_moved,
-				.touches_ended,
+				// On mouse press
+				.mouse_down {
+					// Get event data
+					//mut mouse_pos := window.get_mouse_pos()
+				}
+
+				// Reset the animation because we are out of the app
 				.mouse_enter,
-				.mouse_leave,
-				.mouse_move,
-				.mouse_down,
-				.mouse_up {
-					// Get mouse position
+				.mouse_leave {
+					mut anim_state := &ButtonAnimState(node.get_component('animation_state'))
+					anim_state.mouse_over = false
+				}
+
+				// Mobile only click
+				.touches_ended {
+					
+				}
+
+				// Mobile only highlight
+				.touches_began,
+				.touches_moved {
+					// Get event data
+					mut touches := window.get_touches()
+
+					// Check for overlaps in any of the touches
+					mut anim_state := &ButtonAnimState(node.get_component('animation_state'))
+					anim_state.mouse_over = false
+					for i := 0; i < touches.count; i++ {
+						anim_state.mouse_over = (anim_state.mouse_over || rect.check_inside(touches.list[i]))
+					}
+				}
+
+				// On mouse highlight
+				.mouse_move {
+					// Get event data
 					mut mouse_pos := window.get_mouse_pos()
 
-					// Convert the properties to be relative to the window
-					w_size := window.get_size()
-					scale := window.get_app_scale()
-					mut rect := (&vstorm.NodeR2D(node.get_component('rect'))).get_relative_to(w_size)
-					pad := (&vstorm.NodeV2D(node.get_component('padding'))).get_relative_to(w_size)
-					rect.pos += pad
-					rect.siz -= pad.multiply_by(2)
-					
-					// If inside change the state
+					// Change animation state if required
 					mut anim_state := &ButtonAnimState(node.get_component('animation_state'))
-					mut touch_pos := vstorm.NodeV2D{}
 					anim_state.mouse_over = rect.check_inside(mouse_pos)
-
-					for i := 0; i < e.num_touches; i++ {
-						touch_pos.x = e.touches[i].pos_x / scale
-						touch_pos.y = e.touches[i].pos_y / scale
-						anim_state.mouse_over = (anim_state.mouse_over || rect.check_inside(touch_pos))
-					}
 				}
 				else {}
 			}
