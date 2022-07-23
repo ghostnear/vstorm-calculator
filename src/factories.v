@@ -2,7 +2,7 @@ module main
 
 import gx
 import math
-import vstorm
+import ghostnear.vstorm
 
 // Background factory
 pub fn create_background() &vstorm.Node{
@@ -183,6 +183,7 @@ pub fn create_calculator_button(cfg ButtonConfig) &vstorm.Node {
 			// Get window pointer
 			mut window := node.context.win
 			mut e := window.latest_event
+			mut anim_state := &ButtonAnimState(node.get_component('animation_state'))
 
 			get_rect := fn(node &vstorm.Node) vstorm.NodeR2D {
 				w_size := node.context.win.get_size()
@@ -199,29 +200,50 @@ pub fn create_calculator_button(cfg ButtonConfig) &vstorm.Node {
 				// On mouse press
 				.mouse_down {
 					// Get event data
-					//mut mouse_pos := window.get_mouse_pos()
+					mut mouse_pos := window.get_mouse_pos()
+					
+					// Deactivate to make the button 'click'
+					anim_state.mouse_over = false
+
+					// If inside, fire up the on click event
+					if rect.check_inside(mouse_pos) {
+						// TODO: trigger on click here
+					}
 				}
 
 				// Reset the animation because we are out of the app
 				.mouse_enter,
 				.mouse_leave {
-					mut anim_state := &ButtonAnimState(node.get_component('animation_state'))
 					anim_state.mouse_over = false
 				}
 
 				// Mobile only click
 				.touches_ended {
-					
+					// Care about this only if the button is being held down
+					if anim_state.mouse_over {
+						// Get event data
+						touches := window.get_touches()
+
+						// Check for overlaps in any of the touches
+						anim_state.mouse_over = false
+						for i := 0; i < touches.count; i++ {
+							anim_state.mouse_over = (anim_state.mouse_over || rect.check_inside(touches.list[i]))
+						}
+
+						// Finger was released
+						if anim_state.mouse_over == false {
+							// TODO: trigger event here because finger has been lifted
+						}
+					}
 				}
 
 				// Mobile only highlight
 				.touches_began,
 				.touches_moved {
 					// Get event data
-					mut touches := window.get_touches()
+					touches := window.get_touches()
 
 					// Check for overlaps in any of the touches
-					mut anim_state := &ButtonAnimState(node.get_component('animation_state'))
 					anim_state.mouse_over = false
 					for i := 0; i < touches.count; i++ {
 						anim_state.mouse_over = (anim_state.mouse_over || rect.check_inside(touches.list[i]))
@@ -229,12 +251,12 @@ pub fn create_calculator_button(cfg ButtonConfig) &vstorm.Node {
 				}
 
 				// On mouse highlight
+				.mouse_up,
 				.mouse_move {
 					// Get event data
 					mut mouse_pos := window.get_mouse_pos()
 
 					// Change animation state if required
-					mut anim_state := &ButtonAnimState(node.get_component('animation_state'))
 					anim_state.mouse_over = rect.check_inside(mouse_pos)
 				}
 				else {}

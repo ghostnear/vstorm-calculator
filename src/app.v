@@ -1,7 +1,7 @@
 module main
 
 import gx
-import vstorm
+import ghostnear.vstorm
 
 fn app_init(mut app &vstorm.AppContext) {
 	// App background container
@@ -157,8 +157,10 @@ fn main() {
 		// Window specific configuration
 		winconfig: vstorm.WindowConfig{
 			title: 'Calculator'
-			width: 270
-			height: 480
+			size: vstorm.NodeV2D{
+				x: 270
+				y: 480
+			}
 			init_fn: app_init
 		}
 	}
