@@ -256,10 +256,8 @@ fn create_calculator_display() &vstorm.Node {
 		w_size := window.get_size()
 		pos := (&vstorm.NodeV2D(node.get_component('position'))).get_relative_to(w_size)
 		siz := (&vstorm.NodeV2D(node.get_component('size'))).get_relative_to(w_size)
-		ggc.draw_rounded_rect_filled(
-			pos.x, pos.y,
-			siz.x, siz.y,
-			0.1 * math.min(siz.x, siz.y), &gx.Color(node.get_component('color')))
+		ggc.draw_rounded_rect_filled(pos.x, pos.y, siz.x, siz.y, 0.1 * math.min(siz.x,
+			siz.y), &gx.Color(node.get_component('color')))
 	}, 'draw')
 	return node
 }
