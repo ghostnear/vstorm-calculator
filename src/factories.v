@@ -88,6 +88,7 @@ struct ButtonConfig {
 	yindex       int
 	text         string
 	size         vstorm.NodeV2D
+	command      Command
 	normal_color gx.Color
 	over_color   gx.Color
 }
@@ -122,6 +123,10 @@ fn create_calculator_button(cfg ButtonConfig) &vstorm.Node {
 		x: 2.0
 		y: 2.0
 	}, 'padding')
+	butt.add_component(&Command{
+		name: cfg.command.name
+		args: cfg.command.args
+	}, 'command')
 	butt.add_component(&ButtonAnimState{
 		normal_color: cfg.normal_color
 		over_color: cfg.over_color
@@ -224,13 +229,36 @@ fn create_calculator_button(cfg ButtonConfig) &vstorm.Node {
 		}
 	}, 'event')
 	butt.add_function(fn (mut node vstorm.Node) {
-		// TODO: add to display by accessing the root
+		// Get background
+		mut bkg := node.context.root.get_child('background')
+
+		// Get display
+		if bkg.has_child('calc_display') {
+			mut display := bkg.get_child('calc_display')
+			comm := &Command(node.get_component('command'))
+			mut latest := &Command(display.get_component('lastestcommand'))
+			latest.name = comm.name
+			latest.args = comm.args
+			display.execute('exec')
+		}
 	}, 'on_click')
 	// If we have a text, add the node here
 	if cfg.text != '' {
 		butt.add_child(mut create_text(cfg.text), 'button_text')
 	}
 	return butt
+}
+
+struct Command {
+pub mut:
+	name string
+	args string
+}
+
+struct CommandList {
+pub mut:
+	list []Command
+	text string
 }
 
 fn create_calculator_display() &vstorm.Node {
@@ -250,14 +278,35 @@ fn create_calculator_display() &vstorm.Node {
 		y: (240.0 / 960)
 		r: true
 	}, 'size')
+	node.add_component(&CommandList{}, 'commands')
+	node.add_component(&Command{}, 'lastestcommand')
 	node.add_function(fn (mut node vstorm.Node) {
 		mut window := node.context.win
 		mut ggc := window.gg
+		mut list := &CommandList(node.get_component('commands'))
 		w_size := window.get_size()
 		pos := (&vstorm.NodeV2D(node.get_component('position'))).get_relative_to(w_size)
 		siz := (&vstorm.NodeV2D(node.get_component('size'))).get_relative_to(w_size)
 		ggc.draw_rounded_rect_filled(pos.x, pos.y, siz.x, siz.y, 0.1 * math.min(siz.x,
 			siz.y), &gx.Color(node.get_component('color')))
+
+		ggc.set_cfg(gx.TextCfg{
+			color: gx.rgb(0x99, 0x99, 0x99)
+			size: 34
+		})
+		ggc.ft.fons.draw_text(pos.x, pos.y, list.text)
 	}, 'draw')
+	node.add_function(fn (mut node vstorm.Node) {
+		mut latest := &Command(node.get_component('lastestcommand'))
+		mut list := &CommandList(node.get_component('commands'))
+		match latest.name {
+			'add_digit' {
+				list.text = list.text + latest.args
+			}
+			else {
+				return
+			}
+		}
+	}, 'exec')
 	return node
 }

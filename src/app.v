@@ -22,6 +22,11 @@ fn app_init(mut app vstorm.AppContext) {
 		mut j := 0
 		for y in x {
 			if y != '' {
+				mut command := Command{}
+				if y[0] <= 57 && y[0] >= 48 {
+					command.name = 'add_digit'
+					command.args = y
+				}
 				bkg.add_child(mut create_calculator_button(ButtonConfig{
 					yindex: i
 					xindex: j
@@ -36,6 +41,7 @@ fn app_init(mut app vstorm.AppContext) {
 						g: 0x33
 						b: 0x33
 					}
+					command: command
 					size: vstorm.NodeV2D{
 						x: 1
 						y: 1
@@ -109,6 +115,10 @@ fn app_init(mut app vstorm.AppContext) {
 		xindex: 1
 		yindex: 5
 		text: '0'
+		command: Command{
+			name: 'add_digit'
+			args: '0'
+		}
 		normal_color: gx.Color{
 			r: 0x22
 			g: 0x22
@@ -137,6 +147,7 @@ fn main() {
 				x: 270
 				y: 480
 			}
+			ui_mode: true
 			init_fn: app_init
 		}
 	}
