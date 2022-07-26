@@ -236,7 +236,6 @@ fn create_calculator_display() &vstorm.Node {
 		siz := (&vstorm.NodeV2D(node.get_component('size'))).get_relative_to(w_size)
 		ggc.draw_rounded_rect_filled(pos.x, pos.y, siz.x, siz.y, 0.1 * math.min(siz.x,
 			siz.y), &gx.Color(node.get_component('color')))
-
 		ggc.set_cfg(gx.TextCfg{
 			color: gx.rgb(0x99, 0x99, 0x99)
 			size: 34
@@ -250,6 +249,47 @@ fn create_calculator_display() &vstorm.Node {
 			'add_digit' {
 				// TODO: finish this
 				list.text = list.text + latest.args
+			}
+			'add_trig' {
+				// TODO: finish this
+				list.text = list.text + latest.args
+			}
+			'add_constant' {
+				// TODO: finish this
+				list.text = list.text + latest.args
+			}
+			'add_sign' {
+				// TODO: finish this
+				list.text = list.text + latest.args
+			}
+			'add_operation' {
+				// TODO: finish this
+				list.text = list.text + latest.args
+			}
+			'add_paranthesis' {
+				// TODO: finish this
+				list.text = list.text + latest.args
+			}
+			'add_dot' {
+				// TODO: finish this
+				list.text = list.text + latest.args
+			}
+			'add_log' {
+				// TODO: finish this
+				list.text = list.text + latest.args
+			}
+			'add_sqrt' {
+				// TODO: finish this
+				list.text = list.text + latest.args
+			}
+			'equals' {
+				// TODO: finish this
+			}
+			'remove' {
+				// TODO: finish this
+			}
+			'special' {
+				// TODO: finish this
 			}
 			else {
 				return

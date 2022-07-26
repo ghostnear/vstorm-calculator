@@ -13,6 +13,7 @@ fn app_init(mut app vstorm.AppContext) {
 		size: 18
 		color: gx.rgb(0xAA, 0xAA, 0xAA)
 		align: gx.HorizontalAlign.center
+		relative: true
 		vertical_align: gx.VerticalAlign.middle
 	}
 
@@ -51,6 +52,35 @@ fn app_init(mut app vstorm.AppContext) {
 				if y[0] <= 57 && y[0] >= 48 {
 					command.name = 'add_digit'
 					command.args = y
+				} else {
+					match y {
+						'sin', 'cos', 'tan' {
+							command.name = 'add_trig'
+						}
+						'π', 'e' {
+							command.name = 'add_constant'
+						}
+						'+', '-' {
+							command.name = 'add_sign'
+						}
+						'/', '*', '^' {
+							command.name = 'add_operation'
+						}
+						'.' {
+							command.name = 'add_dot'
+						}
+						'ln' {
+							command.name = 'add_log'
+						}
+						'√' {
+							command.name = 'add_sqrt'
+						}
+						'(', ')' {
+							command.name = 'add_paranthesis'
+						}
+						else {}
+					}
+					command.args = y
 				}
 				bkg.add_child(mut create_calculator_button(ButtonConfig{
 					yindex: i
@@ -67,7 +97,7 @@ fn app_init(mut app vstorm.AppContext) {
 		i++
 	}
 
-	// Special buttons ofc
+	// Special buttons
 	bkg.add_child(mut create_calculator_button(ButtonConfig{
 		xindex: 4
 		yindex: 4
@@ -86,6 +116,9 @@ fn app_init(mut app vstorm.AppContext) {
 			x: 1
 			y: 2
 		}
+		command: Command{
+			name: 'equals'
+		}
 	}, '='), 'calc_button_equals')
 	bkg.add_child(mut create_calculator_button(ButtonConfig{
 		xindex: 4
@@ -101,9 +134,9 @@ fn app_init(mut app vstorm.AppContext) {
 			g: 0x33
 			b: 0x33
 		}
-		size: vstorm.NodeV2D{
-			x: 1
-			y: 1
+		size: default_button_size
+		command: Command{
+			name: 'remove'
 		}
 	}, '←'), 'calc_button_remove')
 	bkg.add_child(mut create_calculator_button(ButtonConfig{
@@ -120,9 +153,9 @@ fn app_init(mut app vstorm.AppContext) {
 			g: 0x33
 			b: 0x66
 		}
-		size: vstorm.NodeV2D{
-			x: 1
-			y: 1
+		size: default_button_size
+		command: Command{
+			name: 'special'
 		}
 	}, '!'), 'calc_button_special')
 	bkg.add_child(mut create_calculator_button(ButtonConfig{
