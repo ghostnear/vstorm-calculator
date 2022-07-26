@@ -8,6 +8,31 @@ fn app_init(mut app vstorm.AppContext) {
 	mut bkg := create_background()
 	app.root.add_child(mut bkg, 'background')
 
+	// Default values
+	default_txt_cfg := vstorm.TextConfig{
+		size: 18
+		color: gx.rgb(0xAA, 0xAA, 0xAA)
+		align: gx.HorizontalAlign.center
+		vertical_align: gx.VerticalAlign.middle
+	}
+
+	default_normal_color := gx.Color{
+		r: 0x22
+		g: 0x22
+		b: 0x22
+	}
+
+	default_over_color := gx.Color{
+		r: 0x33
+		g: 0x33
+		b: 0x33
+	}
+
+	default_button_size := vstorm.NodeV2D{
+		x: 1
+		y: 1
+	}
+
 	// Create the calculator buttons
 	text := [
 		['sin', 'cos', 'tan', 'π'],
@@ -30,23 +55,12 @@ fn app_init(mut app vstorm.AppContext) {
 				bkg.add_child(mut create_calculator_button(ButtonConfig{
 					yindex: i
 					xindex: j
-					text: y
-					normal_color: gx.Color{
-						r: 0x22
-						g: 0x22
-						b: 0x22
-					}
-					over_color: gx.Color{
-						r: 0x33
-						g: 0x33
-						b: 0x33
-					}
+					textcfg: default_txt_cfg
+					normal_color: default_normal_color
+					over_color: default_over_color
 					command: command
-					size: vstorm.NodeV2D{
-						x: 1
-						y: 1
-					}
-				}), 'calc_button_${i}_$j')
+					size: default_button_size
+				}, y), 'calc_button_${i}_$j')
 			}
 			j++
 		}
@@ -57,7 +71,7 @@ fn app_init(mut app vstorm.AppContext) {
 	bkg.add_child(mut create_calculator_button(ButtonConfig{
 		xindex: 4
 		yindex: 4
-		text: '='
+		textcfg: default_txt_cfg
 		normal_color: gx.Color{
 			r: 0x22
 			g: 0x44
@@ -72,11 +86,11 @@ fn app_init(mut app vstorm.AppContext) {
 			x: 1
 			y: 2
 		}
-	}), 'calc_button_equals')
+	}, '='), 'calc_button_equals')
 	bkg.add_child(mut create_calculator_button(ButtonConfig{
 		xindex: 4
 		yindex: 0
-		text: '←'
+		textcfg: default_txt_cfg
 		normal_color: gx.Color{
 			r: 0x44
 			g: 0x22
@@ -91,11 +105,11 @@ fn app_init(mut app vstorm.AppContext) {
 			x: 1
 			y: 1
 		}
-	}), 'calc_button_remove')
+	}, '←'), 'calc_button_remove')
 	bkg.add_child(mut create_calculator_button(ButtonConfig{
 		xindex: 4
 		yindex: 1
-		text: '!'
+		textcfg: default_txt_cfg
 		normal_color: gx.Color{
 			r: 0x22
 			g: 0x22
@@ -110,30 +124,22 @@ fn app_init(mut app vstorm.AppContext) {
 			x: 1
 			y: 1
 		}
-	}), 'calc_button_special')
+	}, '!'), 'calc_button_special')
 	bkg.add_child(mut create_calculator_button(ButtonConfig{
 		xindex: 1
 		yindex: 5
-		text: '0'
+		textcfg: default_txt_cfg
 		command: Command{
 			name: 'add_digit'
 			args: '0'
 		}
-		normal_color: gx.Color{
-			r: 0x22
-			g: 0x22
-			b: 0x22
-		}
-		over_color: gx.Color{
-			r: 0x33
-			g: 0x33
-			b: 0x33
-		}
+		normal_color: default_normal_color
+		over_color: default_over_color
 		size: vstorm.NodeV2D{
 			x: 2
 			y: 1
 		}
-	}), 'calc_button_0_wide')
+	}, '0'), 'calc_button_0_wide')
 	bkg.add_child(mut create_calculator_display(), 'calc_display')
 }
 

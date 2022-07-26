@@ -21,72 +21,11 @@ fn create_background() &vstorm.Node {
 	return node
 }
 
-// Config for the button texts
-struct TextConfig {
-pub mut:
-	// I'd use the actual gx config if it would be mutable, oh well
-	// TODO: do something about this
-	color          gx.Color
-	size           int
-	italic         bool
-	align          gx.HorizontalAlign
-	vertical_align gx.VerticalAlign
-}
-
-struct ButtonTextConfig {
-	text    string
-	textcfg TextConfig
-}
-
-// Factory for BUTTON texts
-fn create_text(text string) &vstorm.Node {
-	mut node := &vstorm.Node{}
-	node.add_component(&ButtonTextConfig{
-		text: text
-		textcfg: TextConfig{
-			color: gx.rgb(0xAA, 0xAA, 0xAA)
-			size: 20
-			italic: true
-			align: gx.HorizontalAlign.center
-			vertical_align: gx.VerticalAlign.middle
-		}
-	}, 'text')
-	node.add_function(fn (mut node vstorm.Node) {
-		mut win := node.context.win
-		mut ggc := win.gg
-		w_size := win.get_size()
-		scale := win.get_app_scale()
-
-		// Parent is guaranteed to be a button so get the properties so we know where to draw the text
-		mut rect := (&vstorm.NodeR2D(node.parent.get_component('rect'))).get_relative_to(w_size)
-		pad := (&vstorm.NodeV2D(node.parent.get_component('padding'))).get_relative_to(w_size)
-		rect.pos += pad
-		rect.siz -= pad + pad
-		mid := (rect.pos + rect.siz.divide_by(2)).multiply_by_float(scale)
-
-		// Get text config and size
-		t := &ButtonTextConfig(node.get_component('text'))
-
-		// ggc.draw_text() is broken on android for no reason
-		// Took this from the app implementation
-		// TODO: do something about this
-		ggc.set_cfg(gx.TextCfg{
-			color: t.textcfg.color
-			size: int(t.textcfg.size * scale)
-			italic: t.textcfg.italic
-			align: t.textcfg.align
-			vertical_align: t.textcfg.vertical_align
-		})
-		ggc.ft.fons.draw_text(mid.x, mid.y, t.text)
-	}, 'draw')
-	return node
-}
-
 // Config for the factory
 struct ButtonConfig {
 	xindex       int
 	yindex       int
-	text         string
+	textcfg      vstorm.TextConfig
 	size         vstorm.NodeV2D
 	command      Command
 	normal_color gx.Color
@@ -101,7 +40,7 @@ mut:
 }
 
 // Button factory
-fn create_calculator_button(cfg ButtonConfig) &vstorm.Node {
+fn create_calculator_button(cfg ButtonConfig, text string) &vstorm.Node {
 	mut butt := &vstorm.Node{}
 	mut b_size := &vstorm.NodeV2D{
 		x: 54.0 / 270
@@ -142,6 +81,17 @@ fn create_calculator_button(cfg ButtonConfig) &vstorm.Node {
 		rect.pos += pad
 		rect.siz -= pad.multiply_by(2)
 
+		// Update text
+		if node.has_child('text') {
+			mut text := node.get_child('text')
+			mut text_pos := &vstorm.NodeV2D(text.get_component('position'))
+			result := rect.pos + rect.siz.divide_by(2)
+			text_pos.x = result.x
+			text_pos.y = result.y
+			text_pos.r = false
+		}
+
+		// Update color depending on the mouse over state
 		anim_state := &ButtonAnimState(node.get_component('animation_state'))
 		mut color := anim_state.normal_color
 		if anim_state.mouse_over {
@@ -242,10 +192,7 @@ fn create_calculator_button(cfg ButtonConfig) &vstorm.Node {
 			display.execute('exec')
 		}
 	}, 'on_click')
-	// If we have a text, add the node here
-	if cfg.text != '' {
-		butt.add_child(mut create_text(cfg.text), 'button_text')
-	}
+	butt.add_child(mut vstorm.new_text_node(cfg.textcfg, text), 'text')
 	return butt
 }
 
@@ -301,6 +248,7 @@ fn create_calculator_display() &vstorm.Node {
 		mut list := &CommandList(node.get_component('commands'))
 		match latest.name {
 			'add_digit' {
+				// TODO: finish this
 				list.text = list.text + latest.args
 			}
 			else {
