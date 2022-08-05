@@ -8,3 +8,4 @@ app-calculator
 *.dylib
 *.dll
 vls.log
+build-android-prod.bat

@@ -1,1 +1,1 @@
-vab .. --name "Calculator" --package-id "com.vstorm.calculator" --version-code 1 -prod
+vab .. --name "Calculator" --package-id "com.vstorm.calculator" --version-code 1
