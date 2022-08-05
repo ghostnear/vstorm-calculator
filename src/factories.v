@@ -237,8 +237,8 @@ fn create_calculator_display() &vstorm.Node {
 		ggc.draw_rounded_rect_filled(pos.x, pos.y, siz.x, siz.y, 0.1 * math.min(siz.x,
 			siz.y), &gx.Color(node.get_component('color')))
 		ggc.set_cfg(gx.TextCfg{
-			color: gx.rgb(0x99, 0x99, 0x99)
-			size: 34
+			color: gx.rgb(0x33, 0x99, 0x99)
+			size: 60
 		})
 		ggc.ft.fons.draw_text(pos.x, pos.y, list.text)
 	}, 'draw')
@@ -296,5 +296,13 @@ fn create_calculator_display() &vstorm.Node {
 			}
 		}
 	}, 'exec')
+	/*mut text := vstorm.new_text_node(vstorm.TextConfig{
+		size: 30
+		color: gx.rgb(0x99, 0x99, 0x99)
+		align: gx.HorizontalAlign.right
+		vertical_align: gx.VerticalAlign.bottom
+		relative: true
+	}, 'test')
+	node.add_child(mut text, 'text')*/
 	return node
 }

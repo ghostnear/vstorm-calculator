@@ -10,11 +10,11 @@ fn app_init(mut app vstorm.AppContext) {
 
 	// Default values
 	default_txt_cfg := vstorm.TextConfig{
-		size: 18
+		size: 30
 		color: gx.rgb(0xAA, 0xAA, 0xAA)
 		align: gx.HorizontalAlign.center
-		relative: true
 		vertical_align: gx.VerticalAlign.middle
+		relative: true
 	}
 
 	default_normal_color := gx.Color{
@@ -192,6 +192,6 @@ fn main() {
 	}
 
 	// App runner
-	mut app := vstorm.new_storm_context(app_config)
+	mut app := vstorm.new_storm_context(mut app_config)
 	app.run()
 }
