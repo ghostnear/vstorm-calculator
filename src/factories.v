@@ -236,12 +236,12 @@ fn create_calculator_display() &vstorm.Node {
 		// Update the text position
 		result_text := node.get_child('result_text')
 		mut result_text_pos := &vstorm.NodeV2D(result_text.get_component('position'))
-		result_text_pos.x = pos.x + siz.x
+		result_text_pos.x = pos.x + siz.x - (5.0 / 480) * w_size.x
 		result_text_pos.y = pos.y + siz.y
 		result_text_pos.r = false
 		last_text := node.get_child('last_text')
 		mut last_text_pos := &vstorm.NodeV2D(last_text.get_component('position'))
-		last_text_pos.x = pos.x + siz.x
+		last_text_pos.x = pos.x + siz.x - (5.0 / 480) * w_size.x
 		last_text_pos.y = (15.0 / 480) * w_size.y
 		last_text_pos.r = false
 	}, 'update')
