@@ -229,18 +229,34 @@ fn create_calculator_display() &vstorm.Node {
 	node.add_component(&Command{}, 'lastestcommand')
 	node.add_function(fn (mut node vstorm.Node) {
 		mut window := node.context.win
-		mut ggc := window.gg
-		mut list := &CommandList(node.get_component('commands'))
 		w_size := window.get_size()
 		pos := (&vstorm.NodeV2D(node.get_component('position'))).get_relative_to(w_size)
 		siz := (&vstorm.NodeV2D(node.get_component('size'))).get_relative_to(w_size)
-		ggc.draw_rounded_rect_filled(pos.x, pos.y, siz.x, siz.y, 0.1 * math.min(siz.x,
-			siz.y), &gx.Color(node.get_component('color')))
-		ggc.set_cfg(gx.TextCfg{
-			color: gx.rgb(0x33, 0x99, 0x99)
-			size: 60
-		})
-		ggc.ft.fons.draw_text(pos.x, pos.y, list.text)
+
+		// Update the text position
+		result_text := node.get_child('result_text')
+		mut result_text_pos := &vstorm.NodeV2D(result_text.get_component('position'))
+		result_text_pos.x = pos.x + siz.x
+		result_text_pos.y = pos.y + siz.y
+		result_text_pos.r = false
+		last_text := node.get_child('last_text')
+		mut last_text_pos := &vstorm.NodeV2D(last_text.get_component('position'))
+		last_text_pos.x = pos.x + siz.x
+		last_text_pos.y = (15.0 / 480) * w_size.y
+		last_text_pos.r = false
+	}, 'update')
+	node.add_function(fn (mut node vstorm.Node) {
+		mut window := node.context.win
+		mut ggc := window.gg
+		w_size := window.get_size()
+		pos := (&vstorm.NodeV2D(node.get_component('position'))).get_relative_to(w_size)
+		siz := (&vstorm.NodeV2D(node.get_component('size'))).get_relative_to(w_size)
+		ggc.draw_rounded_rect_filled(
+			pos.x, pos.y,
+			siz.x, siz.y,
+			0.1 * math.min(siz.x, siz.y),
+			&gx.Color(node.get_component('color'))
+		)
 	}, 'draw')
 	node.add_function(fn (mut node vstorm.Node) {
 		mut latest := &Command(node.get_component('lastestcommand'))
@@ -296,13 +312,22 @@ fn create_calculator_display() &vstorm.Node {
 			}
 		}
 	}, 'exec')
-	/*mut text := vstorm.new_text_node(vstorm.TextConfig{
-		size: 30
-		color: gx.rgb(0x99, 0x99, 0x99)
+	// Texts from the textbox
+	mut result_text := vstorm.new_text_node(vstorm.TextConfig{
+		size: 80
+		color: gx.rgb(0x33, 0x99, 0x99)
 		align: gx.HorizontalAlign.right
 		vertical_align: gx.VerticalAlign.bottom
 		relative: true
-	}, 'test')
-	node.add_child(mut text, 'text')*/
+	}, 'result')
+	mut last_text := vstorm.new_text_node(vstorm.TextConfig{
+		size: 50
+		color: gx.rgb(0xAA, 0xAA, 0xAA)
+		align: gx.HorizontalAlign.right
+		vertical_align: gx.VerticalAlign.top
+		relative: true
+	}, 'before')
+	node.add_child(mut result_text, 'result_text')
+	node.add_child(mut last_text, 'last_text')
 	return node
 }
